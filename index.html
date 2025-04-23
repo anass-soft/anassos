@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnassOS - Terminal-Focused Linux Distribution</title>
+    <style>
+        :root {
+            --primary-color: #2dd4bf;
+            --secondary-color: #155e75;
+            --background-color: #0f172a;
+            --text-color: #f8fafc;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(45, 212, 191, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(21, 94, 117, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+            line-height: 1.6;
+        }
+
+        /* Glass effect */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header styles */
+        header {
+            padding: 1.5rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .logo-icon {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 60px;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            padding: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .secondary-button {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: transparent;
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            border: 1px solid var(--primary-color);
+            margin-left: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-button:hover {
+            background: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        /* Features section */
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .feature-title {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        /* About section */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .terminal {
+            background-color: #1e293b;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .terminal-button.red {
+            background-color: #ef4444;
+        }
+
+        .terminal-button.yellow {
+            background-color: #f59e0b;
+        }
+
+        .terminal-button.green {
+            background-color: #10b981;
+        }
+
+        .terminal-content {
+            line-height: 1.8;
+        }
+
+        .terminal-prompt {
+            color: #10b981;
+        }
+
+        .terminal-command {
+            color: #f8fafc;
+        }
+
+        .terminal-output {
+            color: #94a3b8;
+        }
+
+        /* Download section */
+        .download-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .download-card {
+            padding: 2rem;
+            transition: transform 0.3s ease;
+            max-width: 500px;
+            margin: 3rem auto;
+        }
+
+        .download-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .version-tag {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            padding: 0.2rem 0.8rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .download-size {
+            display: block;
+            margin: 1rem 0;
+            color: #94a3b8;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .copyright {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+                font-size: 1.5rem;
+                color: var(--text-color);
+                cursor: pointer;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <span class="logo-icon">&#9002;</span>
+                    <span>AnassOS</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#about">About</a>
+                    <a href="#download">Download</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="glass hero-content">
+            <h1>AnassOS</h1>
+            <p>A minimalist, terminal-focused Linux distribution built on Debian for developers and command-line enthusiasts.</p>
+            <div>
+                <a href="#download" class="cta-button">Download Now</a>
+                <a href="https://github.com/anassos/anassos" class="secondary-button">View on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="features">
+        <div class="container">
+            <h2 class="section-title">Features</h2>
+            <div class="features">
+                <div class="glass feature-card">
+                    <div class="feature-icon">&#128187;</div>
+                    <h3 class="feature-title">Terminal-Centric</h3>
+                    <p>Designed for those who prefer the power and efficiency of command-line interfaces.</p>
+                </div>
+                <div class="glass feature-card">
+                    <div class="feature-icon">&#9889;</div>
+                    <h3 class="feature-title">High Performance</h3>
+                    <p>Optimized for speed and responsiveness with minimal resource usage.</p>
+                </div>
+                <div class="glass feature-card">
+                    <div class="feature-icon">&#128295;</div>
+                    <h3 class="feature-title">Developer Tools</h3>
+                    <p>Comes with essential development tools pre-installed and configured.</p>
+                </div>
+                <div class="glass feature-card">
+                    <div class="feature-icon">&#128736;</div>
+                    <h3 class="feature-title">Debian-Based</h3>
+                    <p>Built on the stable and reliable Debian foundation for maximum compatibility.</p>
+                </div>
+                <div class="glass feature-card">
+                    <div class="feature-icon">&#128274;</div>
+                    <h3 class="feature-title">Security Focused</h3>
+                    <p>Enhanced security features and regular updates to keep your system protected.</p>
+                </div>
+                <div class="glass feature-card">
+                    <div class="feature-icon">&#128640;</div>
+                    <h3 class="feature-title">Lightweight</h3>
+                    <p>Minimal resource requirements make it ideal for older hardware or virtual machines.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="about">
+        <div class="container">
+            <h2 class="section-title">About AnassOS</h2>
+            <div class="about-content">
+                <div>
+                    <p>AnassOS is a specialized Linux distribution built on Debian that focuses exclusively on terminal usage. It provides a streamlined experience for developers, system administrators, and command-line enthusiasts who prefer working in text-based environments.</p>
+                    <br>
+                    <p>By removing graphical overhead, AnassOS offers superior performance while providing all the essential tools developers need. The distribution is designed with simplicity and efficiency in mind, allowing users to focus on their work without distractions.</p>
+                    <br>
+                    <p>Whether you're a seasoned Linux user or someone looking to dive deeper into the command line, AnassOS provides a perfect platform to enhance your productivity and technical skills.</p>
+                </div>
+                <div class="glass terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-button red"></div>
+                        <div class="terminal-button yellow"></div>
+                        <div class="terminal-button green"></div>
+                    </div>
+                    <div class="terminal-content">
+                        <p><span class="terminal-prompt">user@anassos:~$</span> <span class="terminal-command">uname -a</span></p>
+                        <p class="terminal-output">Linux AnassOS 5.15.0-1 #1 SMP Debian 5.15.15-1 (2023-01-15) x86_64 GNU/Linux</p>
+                        <p><span class="terminal-prompt">user@anassos:~$</span> <span class="terminal-command">cat /etc/os-release</span></p>
+                        <p class="terminal-output">NAME="AnassOS"</p>
+                        <p class="terminal-output">VERSION="Beta 1.0.0"</p>
+                        <p class="terminal-output">ID=anassos</p>
+                        <p class="terminal-output">ID_LIKE=debian</p>
+                        <p class="terminal-output">PRETTY_NAME="AnassOS Beta 1.0.0"</p>
+                        <p class="terminal-output">HOME_URL="https://anassos.org"</p>
+                        <p><span class="terminal-prompt">user@anassos:~$</span> <span class="terminal-command">_</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="download">
+        <div class="container">
+            <h2 class="section-title">Download</h2>
+            <div class="glass download-container">
+                <p>Get started with AnassOS today. Download our beta version and start experiencing the power of a terminal-focused Linux distribution.</p>
+                
+                <div class="glass download-card">
+                    <span class="version-tag">Beta Release</span>
+                    <h3>AnassOS - Beta 1.0.0</h3>
+                    <span class="download-size">Size: 1.2 GB</span>
+                    <p>Our first beta release. Try out the core features and help us improve.</p>
+                    <a href="#" class="cta-button" id="download-beta">Download ISO</a>
+                </div>
+                
+                <div>
+                    <h3>System Requirements</h3>
+                    <p>CPU: 64-bit processor (x86_64)<br>
+                    RAM: 512 MB minimum (2 GB recommended)<br>
+                    Storage: 5 GB minimum (20 GB recommended)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="glass">
+        <div class="container">
+            <p class="copyright">© 2025 AnassOS. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sticky header effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Simulate download functionality
+        document.getElementById('download-beta').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Starting download of AnassOS - Beta 1.0.0...\n\nThis would initiate the actual download in a real scenario.');
+        });
+
+        // Terminal typing effect
+        function simulateTyping() {
+            const terminalCommands = document.querySelectorAll('.terminal-command');
+            const terminalOutputs = document.querySelectorAll('.terminal-output');
+            
+            // Hide all outputs initially
+            terminalOutputs.forEach(output => {
+                output.style.display = 'none';
+            });
+            
+            // Clear all commands initially
+            terminalCommands.forEach(cmd => {
+                cmd.textContent = '';
+            });
+            
+            const commands = [
+                'uname -a',
+                'cat /etc/os-release'
+            ];
+            
+            let cmdIndex = 0;
+            let charIndex = 0;
+            
+            function typeCommand() {
+                if (cmdIndex < commands.length) {
+                    if (charIndex < commands[cmdIndex].length) {
+                        terminalCommands[cmdIndex].textContent += commands[cmdIndex][charIndex];
+                        charIndex++;
+                        setTimeout(typeCommand, 50 + Math.random() * 50);
+                    } else {
+                        // Show output after command is fully typed
+                        setTimeout(() => {
+                            const outputs = document.querySelectorAll('.terminal-output');
+                            let outputIndex = 0;
+                            
+                            if (cmdIndex === 0) {
+                                outputs[0].style.display = 'block';
+                            } else if (cmdIndex === 1) {
+                                for (let i = 1; i < 7; i++) {
+                                    setTimeout(() => {
+                                        outputs[i].style.display = 'block';
+                                    }, i * 100);
+                                }
+                            }
+                            
+                            cmdIndex++;
+                            charIndex = 0;
+                            
+                            if (cmdIndex < commands.length) {
+                                setTimeout(typeCommand, 500);
+                            } else {
+                                // Add blinking cursor at the end
+                                const cursorInterval = setInterval(() => {
+                                    const cursor = document.querySelector('.terminal-command:last-child');
+                                    if (cursor.textContent === '_') {
+                                        cursor.textContent = '';
+                                    } else {
+                                        cursor.textContent = '_';
+                                    }
+                                }, 500);
+                            }
+                        }, 300);
+                    }
+                }
+            }
+            
+            // Start the typing effect
+            setTimeout(typeCommand, 1000);
+        }
+        
+        // Run the terminal simulation when scrolled into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    simulateTyping();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        observer.observe(document.querySelector('.terminal'));
+    </script>
+</body>
+</html>
